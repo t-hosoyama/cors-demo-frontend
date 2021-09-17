@@ -1,7 +1,7 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 type LoginState = {
   login?: boolean
@@ -15,13 +15,25 @@ const initialLoginState: LoginState = {
 
 const Home: NextPage = () => {
   const [loginState, setLoginState] = useState<LoginState>(initialLoginState)
+  const idRef = useRef<HTMLInputElement>(null)
+  const passRef = useRef<HTMLInputElement>(null)
 
   const handleLogin = () => {
+    if (!idRef.current || !passRef.current) {
+      return
+    }
     fetch("https://127.0.0.1:4000/api/login", {
-      method: 'GET',
-      credentials: 'include'      
-    })
-      .then( res => res.json() )
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        id: idRef.current.value,
+        pass: passRef.current.value,
+      })
+    }).then( res => res.json() )
       .then( res => {
         setLoginState(res);
       })
@@ -39,7 +51,10 @@ const Home: NextPage = () => {
         <div>
           {!loginState.login
             ? <div>
+                <div>ID: <input ref={idRef} name="id" type="text" /></div>
+                <div>Pass: <input ref={passRef} name="pass" type="password" /></div>
                 <button onClick={handleLogin}>ログイン</button>
+                <div>{JSON.stringify(loginState)}</div>
               </div>
             : <div>
                 <div>ログイン済</div>
