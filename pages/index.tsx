@@ -17,7 +17,7 @@ const Home: NextPage = () => {
   const [loginState, setLoginState] = useState<LoginState>(initialLoginState)
 
   const handleLogin = () => {
-    fetch("https://localhost:4000/api/login", {
+    fetch("https://127.0.0.1:4000/api/login", {
       method: 'GET',
       credentials: 'include'      
     })
